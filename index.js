@@ -1,29 +1,14 @@
-require('dotenv').config()
-const { Client } = require('discord.js-selfbot-v13')
-const keep_alive = require('./keep_alive.js')
-const client = new Client()
+require('dotenv').config();
+const { Client, GatewayIntentBits } = require('discord.js');
+const keep_alive = require('./keep_alive.js');
 
-client.on('ready', async () => {
-    console.log(`Logged in as ${client.user.tag}!`)
+const client = new Client({
+  intents: [GatewayIntentBits.Guilds],
+});
 
-    const channel = await client.channels.fetch(process.env.BUMP_CHANNEL)
-    
-    async function bump() {
-        await channel.sendSlash('302050872383242240', 'bump')
-        console.count('Bumped!')
-    }
+client.once('ready', () => {
+  console.log(`Logged in as ${client.user.tag}!`);
+  client.user.setStatus("dnd"); // Sets the bot's status to Do Not Disturb
+});
 
-    function loop() {
-        // send bump message every 2-3 hours, to prevent detection.
-        var randomNum = Math.round(Math.random() * (9000000 - 7200000 + 1)) + 7200000
-        setTimeout(function () {
-            bump()
-            loop()
-        }, randomNum)
-    }
-    
-    bump()
-    loop()
-})
-
-client.login(process.env.TOKEN)
+client.login(process.env.TOKEN);
